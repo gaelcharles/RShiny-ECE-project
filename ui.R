@@ -15,7 +15,10 @@ fluidPage(
     
     # Show a plot of the generated distribution
     mainPanel(
-      plotOutput("distPlot")
+      tabsetPanel(type = "tabs",
+                  tabPanel("Plot", plotOutput("distPlot")),
+                  tabPanel("Summary", verbatimTextOutput("summary"))
+      )
     )
   )
 )
