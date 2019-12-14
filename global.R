@@ -1,13 +1,9 @@
-trains <- read.csv("data/french-sncf-trains-regularities/full_trains.csv")
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
 
-# Custom functions - we define them here in order not to overcharge ui.R
-getStationNames <- function() {
-  # Get unique values for "departure_station", sorted
-  stations <- trains %>% 
-    select(departure_station) %>% 
-    distinct() %>% 
-    arrange(departure_station) %>%
-    rename(Station = departure_station)
-  
-  return(stations)
-}
+TRAINS <- read.csv("data/french-sncf-trains-regularities/full_trains.csv")
+MIN_DATE <- TRAINS %>% select(year) %>% min() %>% as.numeric()
+MAX_DATE <- TRAINS %>% select(year) %>% max() %>% as.numeric()
+STATION_NAMES <-  TRAINS %>% select(departure_station) %>% distinct() %>% 
+                    arrange(departure_station) %>% rename(Station = departure_station)

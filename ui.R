@@ -17,27 +17,32 @@ fluidPage(
         h3("Trains control panel"),
         hr(),
         
+        radioButtons("aggregation_by",
+          label = h4("Aggregate by:"),
+          choices=c("Year" = "year", "Station" = "station")),
+        
+        hr(),
         # Departures
         selectInput("departure_station",
           label = h4("Departure station"),
-          choices = getStationNames()),
+          choices = STATION_NAMES),
         checkboxInput("all_stations",
           label = "Aggregate on all stations",
           value = FALSE),
         
         # Year range
-        sliderInput("year_range",
-          label = h4("Year range"),
-          min = 2015,
-          max = 2018,
-          value = c(2015, 2018),
+        sliderInput("year",
+          label = h4("Year"),
+          min = MIN_DATE,
+          max = MAX_DATE,
+          value = MAX_DATE,
           ticks = FALSE,
           sep = ""),
         
         # Aggregation types (different plots depending on radio buttons)
         radioButtons("aggregation_type",
          label = NULL,
-         choices=c("Total aggregations"          = "tot",
+         choices=c("Total aggregations" = "tot",
                    "Average/median aggregations" = "avg",
                    "Proportion aggregations (%)" = "pct"))
       ),
@@ -45,7 +50,8 @@ fluidPage(
       ## MAIN PANEL ##
       mainPanel(
         h3("Resulting plots"),
-        h4(textOutput("trains_plotParams"))
+        textOutput("trains_plotParams"),
+        plotOutput("trains_plot")
       )
     ),
     
