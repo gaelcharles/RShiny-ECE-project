@@ -48,63 +48,207 @@ function(input, output) {
     plot5 <- ggplot(TRAINS, aes())
     plot6 <- ggplot(TRAINS, aes())
     
-    # Aggregation with sums
+    # Aggregation with sums, per year
     if(input$aggregation_type == "tot" & input$aggregation_by == "year") {
       
-      if(!input$all_stations) {
-        print("reading temp_sumAgg_ByYearStation.csv")
-        aggDF <- read.csv("data/temp_sumAgg_ByYearStation.csv") %>% filter(station == input$departure_station)
-        #x <- aggDF$year
-      } else {
-        print("reading temp_sumAgg_ByYear.csv")
-        aggDF <- read.csv("data/temp_sumAgg_ByYear.csv")
-      }
+      aggDF <- if(!input$all_stations)
+        read.csv("data/agg_byYearStation.csv") %>% filter(station == input$departure_station)
+        else read.csv("data/agg_byYear.csv")
       
       plot1 <- ggplot(aggDF, aes(x=year, y=carried_out, fill=as.factor(year))) + 
         geom_col() + 
         scale_fill_brewer(palette="Blues") +
-        geom_text(aes(label=carried_out), vjust=0) + 
-        labs(title="Carried out trains (total)") + 
+        geom_label(aes(label=carried_out), vjust=0) + 
+        labs(title="Carried out trains per year") + 
         guides(fill="none") + 
-        theme_minimal()
+        theme_minimal() +
+        theme(axis.title.y=element_blank())
       
       plot2 <- ggplot(aggDF, aes(x=year, y=num_of_canceled_trains, fill=as.factor(year))) + 
         geom_col() + 
         scale_fill_brewer(palette="Purples") +
-        geom_text(aes(label=num_of_canceled_trains), vjust=0) + 
-        labs(title="Canceled trains (total)") + 
+        geom_label(aes(label=num_of_canceled_trains), vjust=0) + 
+        labs(title="Canceled trains per year") + 
         guides(fill="none") + 
-        theme_minimal()
+        theme_minimal() +
+        theme(axis.title.y=element_blank())
       
       plot3 <- ggplot(aggDF, aes(x=year, y=num_late_at_departure, fill=as.factor(year))) + 
         geom_col() + 
         scale_fill_brewer(palette="Oranges") +
-        geom_text(aes(label=num_late_at_departure), vjust=0) + 
-        labs(title="Late trains at departure (total)") + 
+        geom_label(aes(label=num_late_at_departure), vjust=0) + 
+        labs(title="Late trains at departure per year") + 
         guides(fill="none") + 
-        theme_minimal()
+        theme_minimal() +
+        theme(axis.title.y=element_blank())
       
       plot4 <- ggplot(aggDF, aes(x=year, y=num_arriving_late, fill=as.factor(year))) + 
         geom_col() + 
         scale_fill_brewer(palette="Greens") +
-        geom_text(aes(label=num_arriving_late), vjust=0) + 
-        labs(title="Late trains at arrival (total)") + 
+        geom_label(aes(label=num_arriving_late), vjust=0) + 
+        labs(title="Late trains at arrival per year") + 
         guides(fill="none") + 
-        theme_minimal()
+        theme_minimal() +
+        theme(axis.title.y=element_blank())
       
       grid.arrange(plot1, plot2, plot3, plot4, nrow=2, ncol=2)
     
+    # Aggregation with sums, per station
     } else if(input$aggregation_type == "tot" & input$aggregation_by == "station") {
       
-      aggDF <- read.csv("data/temp_sumAgg_ByYearStation.csv") %>% filter(year == input$year)
+      aggDF <- read.csv("data/agg_byYearStation.csv") %>% filter(year == input$year)
       
       plot1 <- ggplot(aggDF, aes(x=station, y=carried_out, fill=as.factor(station))) + 
         geom_col() + 
         guides(fill="none") + 
         theme_minimal() + 
-        theme(axis.text.x=element_text(size = 7, angle = -90, hjust = 0), axis.title.x=element_blank())
+        theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
+              axis.title.x=element_blank(), axis.title.y=element_blank()) +
+        labs(title="Carried out trains per station")
+      
+      plot2 <- ggplot(aggDF, aes(x=station, y=num_of_canceled_trains, fill=as.factor(station))) + 
+        geom_col() + 
+        guides(fill="none") + 
+        theme_minimal() + 
+        theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
+              axis.title.x=element_blank(), axis.title.y=element_blank()) +
+        labs(title="Canceled trains per station")
+      
+      plot3 <- ggplot(aggDF, aes(x=station, y=num_late_at_departure, fill=as.factor(station))) + 
+        geom_col() + 
+        guides(fill="none") + 
+        theme_minimal() + 
+        theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
+              axis.title.x=element_blank(), axis.title.y=element_blank()) +
+        labs(title="Late trains at departure per station")
+      
+      plot4 <- ggplot(aggDF, aes(x=station, y=num_arriving_late, fill=as.factor(station))) + 
+        geom_col() + 
+        guides(fill="none") + 
+        theme_minimal() + 
+        theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
+              axis.title.x=element_blank(), axis.title.y=element_blank()) +
+        labs(title="Late trains on arrival per station")
       
       grid.arrange(plot1, plot2, plot3, plot4, nrow=4, ncol=1)
+    
+    # Aggregation with means, per year
+    } else if(input$aggregation_type == "avg" & input$aggregation_by == "year") {
+
+      aggDF <- if(!input$all_stations)
+        read.csv("data/agg_byYearStation.csv") %>% filter(station == input$departure_station)
+        else read.csv("data/agg_byYear.csv")
+
+      plot1 <- ggplot(aggDF, aes(x=year, y=avg_late_at_departure, fill=as.factor(year))) +
+        geom_col() +
+        scale_fill_brewer(palette="Blues") +
+        geom_label(aes(label=round(avg_late_at_departure, 1)), vjust=0) + 
+        labs(title="Average number of delayed trains at departure per year") + 
+        guides(fill="none") + 
+        theme_minimal() +
+        theme(axis.title.y=element_blank())
+      
+      plot2 <- ggplot(aggDF, aes(x=year, y=avg_arriving_late, fill=as.factor(year))) +
+        geom_col() +
+        scale_fill_brewer(palette="Purples") +
+        geom_label(aes(label=round(avg_arriving_late, 1)), vjust=0) + 
+        labs(title="Average number of delayed trains on arrival per year") + 
+        guides(fill="none") + 
+        theme_minimal() +
+        theme(axis.title.y=element_blank())
+      
+      plot3 <- ggplot(aggDF, aes(x=year, y=avg_delay_all_departing, fill=as.factor(year))) +
+        geom_col() +
+        scale_fill_brewer(palette="Oranges") +
+        geom_label(aes(label=round(avg_delay_all_departing, 1)), vjust=0) + 
+        labs(title="Average delay at departure of all trains per year (min)") + 
+        guides(fill="none") + 
+        theme_minimal() +
+        theme(axis.title.y=element_blank())
+      
+      plot4 <- ggplot(aggDF, aes(x=year, y=avg_delay_all_arriving, fill=as.factor(year))) +
+        geom_col() +
+        scale_fill_brewer(palette="Greens") +
+        geom_label(aes(label=round(avg_delay_all_arriving, 1)), vjust=0) + 
+        labs(title="Average delay on arrival of all trains per year (min)") + 
+        guides(fill="none") + 
+        theme_minimal() +
+        theme(axis.title.y=element_blank())
+      
+      plot5 <- ggplot(aggDF, aes(x=year, y=avg_delay_late_at_departure, fill=as.factor(year))) +
+        geom_col() +
+        scale_fill_brewer(palette="Pastel1") +
+        geom_label(aes(label=round(avg_delay_late_at_departure, 1)), vjust=0) + 
+        labs(title="Average delay at departure of late trains per year (min)") + 
+        guides(fill="none") + 
+        theme_minimal() +
+        theme(axis.title.y=element_blank())
+      
+      plot6 <- ggplot(aggDF, aes(x=year, y=avg_delay_late_on_arrival, fill=as.factor(year))) +
+        geom_col() +
+        scale_fill_brewer(palette="Pastel2") +
+        geom_label(aes(label=round(avg_delay_late_on_arrival, 1)), vjust=0) + 
+        labs(title="Average delay on arrival of late trains per year (min)") + 
+        guides(fill="none") + 
+        theme_minimal() +
+        theme(axis.title.y=element_blank())
+      
+      grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6, nrow=3, ncol=2)
+      
+    } 
+    else if(input$aggregation_type == "avg" & input$aggregation_by == "station") {
+      
+      aggDF <- read.csv("data/agg_byYearStation.csv") %>% filter(year == input$year)
+      
+      plot1 <- ggplot(aggDF, aes(x=station, y=avg_late_at_departure, fill=as.factor(station))) +
+        geom_col() + 
+        guides(fill="none") + 
+        theme_minimal() + 
+        theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
+              axis.title.x=element_blank(), axis.title.y=element_blank()) +
+        labs(title="Average number of delayed train at departure per station")
+      
+      plot2 <- ggplot(aggDF, aes(x=station, y=avg_arriving_late, fill=as.factor(station))) +
+        geom_col() + 
+        guides(fill="none") + 
+        theme_minimal() + 
+        theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
+              axis.title.x=element_blank(), axis.title.y=element_blank()) +
+        labs(title="Average number of delayed train on arrival per station")
+      
+      plot3 <- ggplot(aggDF, aes(x=station, y=avg_delay_all_departing, fill=as.factor(station))) +
+        geom_col() + 
+        guides(fill="none") + 
+        theme_minimal() + 
+        theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
+              axis.title.x=element_blank(), axis.title.y=element_blank()) +
+        labs(title="Average delay at departure of all trains per station (min)")
+      
+      plot4 <- ggplot(aggDF, aes(x=station, y=avg_delay_all_arriving, fill=as.factor(station))) +
+        geom_col() + 
+        guides(fill="none") + 
+        theme_minimal() + 
+        theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
+              axis.title.x=element_blank(), axis.title.y=element_blank()) +
+        labs(title="Average delay on arrival of all trains per station (min)")
+      
+      plot5 <- ggplot(aggDF, aes(x=station, y=avg_delay_late_at_departure, fill=as.factor(station))) +
+        geom_col() + 
+        guides(fill="none") + 
+        theme_minimal() + 
+        theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
+              axis.title.x=element_blank(), axis.title.y=element_blank()) +
+        labs(title="Average delay at departure of late trains per station (min)")
+      
+      plot6 <- ggplot(aggDF, aes(x=station, y=avg_delay_late_on_arrival, fill=as.factor(station))) +
+        geom_col() + 
+        guides(fill="none") + 
+        theme_minimal() + 
+        theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
+              axis.title.x=element_blank(), axis.title.y=element_blank()) +
+        labs(title="Average delay on arrival of late trains per station (min)")
+      
+      grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6, nrow=6, ncol=1)
     }
 
     
