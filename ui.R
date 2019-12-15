@@ -53,7 +53,7 @@ fluidPage(
         column(6, sliderInput("dynamic_width",
                               label = "Graph width",
                               min = 500,
-                              max = 1500,
+                              max = 1200,
                               value = 600)),
         column(6, sliderInput("dynamic_height",
                               label = "Graph height",

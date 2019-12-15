@@ -93,8 +93,9 @@ function(input, output) {
       
       grid.arrange(plot1, plot2, plot3, plot4, nrow=2, ncol=2)
     
+    }
     # Aggregation with sums, per station
-    } else if(input$aggregation_type == "tot" & input$aggregation_by == "station") {
+    else if(input$aggregation_type == "tot" & input$aggregation_by == "station") {
       
       aggDF <- read.csv("data/agg_byYearStation.csv") %>% filter(year == input$year)
       
@@ -102,38 +103,34 @@ function(input, output) {
         geom_col() + 
         guides(fill="none") + 
         theme_minimal() + 
-        theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
-              axis.title.x=element_blank(), axis.title.y=element_blank()) +
-        labs(title="Carried out trains per station")
+        theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
+        labs(title="Carried out trains per station") + coord_flip()
       
       plot2 <- ggplot(aggDF, aes(x=station, y=num_of_canceled_trains, fill=as.factor(station))) + 
         geom_col() + 
         guides(fill="none") + 
         theme_minimal() + 
-        theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
-              axis.title.x=element_blank(), axis.title.y=element_blank()) +
-        labs(title="Canceled trains per station")
+        theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
+        labs(title="Canceled trains per station") + coord_flip()
       
       plot3 <- ggplot(aggDF, aes(x=station, y=num_late_at_departure, fill=as.factor(station))) + 
         geom_col() + 
         guides(fill="none") + 
         theme_minimal() + 
-        theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
-              axis.title.x=element_blank(), axis.title.y=element_blank()) +
-        labs(title="Late trains at departure per station")
+        theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
+        labs(title="Late trains at departure per station") + coord_flip()
       
       plot4 <- ggplot(aggDF, aes(x=station, y=num_arriving_late, fill=as.factor(station))) + 
         geom_col() + 
         guides(fill="none") + 
         theme_minimal() + 
-        theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
-              axis.title.x=element_blank(), axis.title.y=element_blank()) +
-        labs(title="Late trains on arrival per station")
+        theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
+        labs(title="Late trains on arrival per station") + coord_flip()
       
       grid.arrange(plot1, plot2, plot3, plot4, nrow=4, ncol=1)
-    
+    } 
     # Aggregation with means, per year
-    } else if(input$aggregation_type == "avg" & input$aggregation_by == "year") {
+    else if(input$aggregation_type == "avg" & input$aggregation_by == "year") {
 
       aggDF <- if(!input$all_stations)
         read.csv("data/agg_byYearStation.csv") %>% filter(station == input$departure_station)
@@ -196,6 +193,7 @@ function(input, output) {
       grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6, nrow=3, ncol=2)
       
     } 
+    # Aggregations with mean, per station
     else if(input$aggregation_type == "avg" & input$aggregation_by == "station") {
       
       aggDF <- read.csv("data/agg_byYearStation.csv") %>% filter(year == input$year)
@@ -249,6 +247,45 @@ function(input, output) {
         labs(title="Average delay on arrival of late trains per station (min)")
       
       grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6, nrow=6, ncol=1)
+      
+    }
+    # Aggregations with percent, per year
+    else if(input$aggregation_type == "pct" & input$aggregation_by == "year") {
+      
+      aggDF <- if(!input$all_stations)
+        read.csv("data/agg_byYearStation.csv") %>% filter(station == input$departure_station)
+        else read.csv("data/agg_byYear.csv")
+      
+      aggDF <- aggDF %>% mutate(pct_canceled_trains = 100*(num_of_canceled_trains/total_num_trips)) %>%
+        mutate(pct_carried_out_trains = 100*(carried_out/total_num_trips))
+      
+      plot1 <- ggplot(aggDF, aes(x=year, y=pct_canceled_trains, fill=as.factor(pct_canceled_trains))) + 
+        geom_col() + scale_fill_brewer(palette="Blues") + 
+        geom_label(aes(label=round(pct_canceled_trains, 1))) + 
+        labs(title="Proportion of canceled trains per year", y="Proportion (%)") +
+        guides(fill="none") + 
+        theme_minimal() +
+        theme(axis.title.x=element_blank())
+      
+      grid.arrange(plot1, plot2, nrow=2, ncol=1)
+    }
+    # Aggregations with percent, per station
+    else if(input$aggregation_type == "pct" & input$aggregation_by == "station") {
+      
+      aggDF <- read.csv("data/agg_byYearStation.csv") %>% filter(year == 2018)
+      
+      aggDF <- aggDF %>% mutate(pct_canceled_trains = 100*(num_of_canceled_trains/total_num_trips)) %>%
+        mutate(pct_carried_out_trains = 100*(carried_out/total_num_trips))
+      
+      plot1 <- ggplot(aggDF, aes(x=station, y=pct_canceled_trains, fill=as.factor(station))) + 
+        geom_col() + 
+        guides(fill="none") + 
+        theme_minimal() + 
+        theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
+              axis.title.x=element_blank(), axis.title.y=element_blank()) +
+        labs(title="Proportion of canceled trains per station", y="Proportion (%)")
+      
+      grid.arrange(plot1, plot2, nrow=2, ncol=1)
     }
 
     
