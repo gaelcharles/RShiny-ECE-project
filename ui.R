@@ -14,6 +14,7 @@ fluidPage(
              
       ## SIDEBAR PANEL ##
       sidebarPanel(
+        fluidRow(
         h3("Trains control panel"),
         hr(),
         
@@ -44,14 +45,28 @@ fluidPage(
          label = NULL,
          choices=c("Total aggregations" = "tot",
                    "Average/median aggregations" = "avg",
-                   "Proportion aggregations (%)" = "pct"))
+                   "Proportion aggregations (%)" = "pct")),
+        
+        hr(),
+        
+        # User-defined graph size
+        column(6, sliderInput("dynamic_width",
+                              label = "Graph width",
+                              min = 500,
+                              max = 1500,
+                              value = 600)),
+        column(6, sliderInput("dynamic_height",
+                              label = "Graph height",
+                              min = 500,
+                              max = 1500,
+                              value = 600)))
       ),
       
       ## MAIN PANEL ##
       mainPanel(
         h3("Resulting plots"),
         textOutput("trains_plotParams"),
-        plotOutput("trains_plot")
+        uiOutput("trains_plotUI")
       )
     ),
     
