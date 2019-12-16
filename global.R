@@ -20,16 +20,15 @@ STATION_NAMES <-  TRAINS %>% select(departure_station) %>% distinct() %>%
 createAggregatedDFs <- function() {
   
   delays <- read.csv("data/french-sncf-trains-regularities/regularite-mensuelle-tgv-aqst.csv",
-                            sep=';', check.names=FALSE, encoding="UTF-8")
-  
-  delays <- delays %>% select("Année",
-                              "Gare de départ",
-                              "Retard pour causes externes",
-                              "Retard à cause infrastructure ferroviaire",
-                              "Retard à cause gestion trafic",
-                              "Retard à cause matériel roulant",
-                              "Retard à cause gestion en gare et réutilisation de matériel",
-                              "Retard à cause prise en compte voyageurs") %>% drop_na()
+                            sep=';', check.names=FALSE, encoding="UTF-8") %>% 
+    select("Année",
+           "Gare de départ",
+           "Retard pour causes externes",
+           "Retard à cause infrastructure ferroviaire",
+           "Retard à cause gestion trafic",
+           "Retard à cause matériel roulant",
+           "Retard à cause gestion en gare et réutilisation de matériel",
+           "Retard à cause prise en compte voyageurs") %>% drop_na()
   
   delays_year_st <- aggregate(delays %>% select(starts_with("Retard")),
                               by = list(year = delays[,1], station = delays[,2]),
@@ -66,14 +65,18 @@ createAggregatedDFs <- function() {
                       num_late_at_departure, num_arriving_late),
     by = list(year = TRAINS$year, station = TRAINS$departure_station),
     FUN = sum) %>%
-    mutate(carried_out = total_num_trips - num_of_canceled_trains)
+    mutate(num_carried_out = total_num_trips - num_of_canceled_trains) %>%
+    mutate(canceled = 100*(num_of_canceled_trains/total_num_trips)) %>%
+    mutate(carried_out = 100-canceled)
   
   agg_sum_year <- aggregate(
     TRAINS %>% select(total_num_trips, num_of_canceled_trains,
                       num_late_at_departure, num_arriving_late),
     by = list(year = TRAINS$year),
     FUN = sum) %>%
-    mutate(carried_out = total_num_trips - num_of_canceled_trains)
+    mutate(num_carried_out = total_num_trips - num_of_canceled_trains) %>%
+    mutate(canceled = 100*(num_of_canceled_trains/total_num_trips)) %>%
+    mutate(carried_out = 100-canceled)
   
   agg_avg_year_st <- aggregate(
     TRAINS %>% select(num_late_at_departure, num_arriving_late,
@@ -93,6 +96,25 @@ createAggregatedDFs <- function() {
     rename(avg_late_at_departure = num_late_at_departure) %>%
     rename(avg_arriving_late = num_arriving_late)
   
+  agg_pct_year_st <- agg_sum_year_st %>% select(year, station, canceled, carried_out)
+  
+  agg_pct_year_st <- agg_pct_year_st %>% melt(
+    id.vars = c("year", "station"),
+    measure.vars = c("canceled", "carried_out"),
+    variable.name = "train_state",
+    value.name = "proportion"
+  )
+  
+  agg_pct_year <- agg_sum_year %>% select(year, canceled, carried_out)
+  
+  agg_pct_year <- agg_pct_year %>% melt(
+    id.vars = c("year"),
+    measure.vars = c("canceled", "carried_out"),
+    variable.name = "train_state",
+    value.name = "proportion"
+  )
+  
+  # CSV Outputs
   agg_sum_year_st %>% merge(agg_avg_year_st) %>%
     write.csv("data/agg_byYearStation.csv", row.names=FALSE)
   
@@ -102,6 +124,10 @@ createAggregatedDFs <- function() {
   delays_melted_year_st %>% write.csv("data/delays_melted_byYearStation.csv", row.names=FALSE)
   
   delays_melted_year %>% write.csv("data/delays_melted_byYear.csv", row.names=FALSE)
+ 
+  agg_pct_year_st %>% write.csv("data/agg_melted_byYearStation.csv", row.names=FALSE)
+  
+  agg_pct_year %>% write.csv("data/agg_melted_byYear.csv", row.names=FALSE)
 }
 
 createAggregatedDFs()
