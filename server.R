@@ -256,6 +256,11 @@ function(input, output) {
         read.csv("data/agg_byYearStation.csv") %>% filter(station == input$departure_station)
         else read.csv("data/agg_byYear.csv")
       
+      delays_melted <- if(!input$all_stations)
+        read.csv("data/delays_melted_byYearStation.csv", check.names=FALSE, encoding="Latin-1") %>%
+        filter(station == input$departure_station)
+        else read.csv("data/delays_melted_byYear.csv", check.names=FALSE, encoding="Latin-1")
+      
       aggDF <- aggDF %>% mutate(pct_canceled_trains = 100*(num_of_canceled_trains/total_num_trips)) %>%
         mutate(pct_carried_out_trains = 100*(carried_out/total_num_trips))
       
@@ -267,6 +272,14 @@ function(input, output) {
         theme_minimal() +
         theme(axis.title.x=element_blank())
       
+      plot2 <- ggplot(delays_melted,
+                      aes(x=year, y=proportion, fill=delay_cause)) +
+        geom_col(position="fill") + 
+        theme_minimal() + 
+        theme(axis.text.x=element_text(angle=45, vjust=2.6, hjust=1.5), axis.title.x=element_blank()) + 
+        guides(fill=guide_legend(title="Delay causes")) + 
+        labs(y="Proportion of delay causes per year (%)")
+      
       grid.arrange(plot1, plot2, nrow=2, ncol=1)
     }
     # Aggregations with percent, per station
@@ -277,6 +290,12 @@ function(input, output) {
       aggDF <- aggDF %>% mutate(pct_canceled_trains = 100*(num_of_canceled_trains/total_num_trips)) %>%
         mutate(pct_carried_out_trains = 100*(carried_out/total_num_trips))
       
+      delays_melted <- read.csv("data/delays_melted_byYearStation.csv", check.names=FALSE, encoding="Latin-1")
+      
+      aggregate(delays_melted %>% select(proportion), 
+                by=list(station=delays_melted$station, delay_cause=delays_melted$delay_cause), 
+                FUN=mean)
+      
       plot1 <- ggplot(aggDF, aes(x=station, y=pct_canceled_trains, fill=as.factor(station))) + 
         geom_col() + 
         guides(fill="none") + 
@@ -284,6 +303,14 @@ function(input, output) {
         theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
               axis.title.x=element_blank(), axis.title.y=element_blank()) +
         labs(title="Proportion of canceled trains per station", y="Proportion (%)")
+      
+      plot2 <- ggplot(delays_melted,
+                      aes(x=station, y=proportion, fill=delay_cause)) +
+        geom_col(position="fill") + 
+        theme_minimal() + 
+        theme(axis.text.x=element_text(angle=-90, hjust=0), axis.title.x=element_blank(), legend.position="top") +
+        guides(fill=guide_legend(title="Delay causes")) +
+        labs(y="Proportion of delay causes per station (%)")
       
       grid.arrange(plot1, plot2, nrow=2, ncol=1)
     }
