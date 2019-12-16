@@ -55,10 +55,10 @@ function(input, output) {
         read.csv("data/agg_byYearStation.csv") %>% filter(station == input$departure_station)
         else read.csv("data/agg_byYear.csv")
       
-      plot1 <- ggplot(aggDF, aes(x=year, y=carried_out, fill=as.factor(year))) + 
+      plot1 <- ggplot(aggDF, aes(x=year, y=num_carried_out, fill=as.factor(year))) + 
         geom_col() + 
         scale_fill_brewer(palette="Blues") +
-        geom_label(aes(label=carried_out), vjust=0) + 
+        geom_label(aes(label=num_carried_out), vjust=0) + 
         labs(title="Carried out trains per year") + 
         guides(fill="none") + 
         theme_minimal() +
@@ -99,7 +99,7 @@ function(input, output) {
       
       aggDF <- read.csv("data/agg_byYearStation.csv") %>% filter(year == input$year)
       
-      plot1 <- ggplot(aggDF, aes(x=station, y=carried_out, fill=as.factor(station))) + 
+      plot1 <- ggplot(aggDF, aes(x=station, y=num_carried_out, fill=as.factor(station))) + 
         geom_col() + 
         guides(fill="none") + 
         theme_minimal() + 
@@ -252,38 +252,64 @@ function(input, output) {
     # Aggregations with percent, per year
     else if(input$aggregation_type == "pct" & input$aggregation_by == "year") {
       
-      aggDF <- if(!input$all_stations)
-        read.csv("data/agg_byYearStation.csv") %>% filter(station == input$departure_station)
-        else read.csv("data/agg_byYear.csv")
+      aggDF_melted <- if(!input$all_stations)
+        read.csv("data/agg_melted_byYearStation.csv") %>% filter(station == input$departure_station)
+        else read.csv("data/agg_melted_byYear.csv")
       
-      aggDF <- aggDF %>% mutate(pct_canceled_trains = 100*(num_of_canceled_trains/total_num_trips)) %>%
-        mutate(pct_carried_out_trains = 100*(carried_out/total_num_trips))
+      delays_melted <- if(!input$all_stations)
+        read.csv("data/delays_melted_byYearStation.csv", check.names=FALSE, encoding="Latin-1") %>%
+        filter(station == input$departure_station)
+        else read.csv("data/delays_melted_byYear.csv", check.names=FALSE, encoding="Latin-1")
+
+      # aggDF <- aggDF %>% mutate(pct_canceled_trains = 100*(num_of_canceled_trains/total_num_trips)) %>%
+      #   mutate(pct_carried_out_trains = 100*(num_carried_out/total_num_trips))
       
-      plot1 <- ggplot(aggDF, aes(x=year, y=pct_canceled_trains, fill=as.factor(pct_canceled_trains))) + 
-        geom_col() + scale_fill_brewer(palette="Blues") + 
-        geom_label(aes(label=round(pct_canceled_trains, 1))) + 
-        labs(title="Proportion of canceled trains per year", y="Proportion (%)") +
-        guides(fill="none") + 
+      plot1 <- ggplot(aggDF_melted,
+                      aes(x=year, y=proportion, fill=train_state)) +
+        geom_col(position="fill") +
         theme_minimal() +
-        theme(axis.title.x=element_blank())
+        theme(axis.text.x=element_text(angle=45, vjust=2.6, hjust=1.5), axis.title.x=element_blank()) + 
+        guides(fill=guide_legend(title="Train state")) + 
+        labs(y="Proportion of canceled trains per year (%)")
+      
+      plot2 <- ggplot(delays_melted,
+                      aes(x=year, y=proportion, fill=delay_cause)) +
+        geom_col(position="fill") + 
+        theme_minimal() + 
+        theme(axis.text.x=element_text(angle=45, vjust=2.6, hjust=1.5), axis.title.x=element_blank()) + 
+        guides(fill=guide_legend(title="Delay causes")) + 
+        labs(y="Proportion of delay causes per year (%)")
       
       grid.arrange(plot1, plot2, nrow=2, ncol=1)
     }
     # Aggregations with percent, per station
     else if(input$aggregation_type == "pct" & input$aggregation_by == "station") {
+
+      aggDF_melted <- read.csv("data/agg_melted_byYearStation.csv", check.names=FALSE) %>%
+        filter(year == input$year)
       
-      aggDF <- read.csv("data/agg_byYearStation.csv") %>% filter(year == 2018)
+      delays_melted <- read.csv("data/delays_melted_byYearStation.csv", check.names=FALSE, encoding="Latin-1")
       
-      aggDF <- aggDF %>% mutate(pct_canceled_trains = 100*(num_of_canceled_trains/total_num_trips)) %>%
-        mutate(pct_carried_out_trains = 100*(carried_out/total_num_trips))
+      # aggregate(delays_melted %>% select(proportion), 
+      #           by=list(station=delays_melted$station, delay_cause=delays_melted$delay_cause), 
+      #           FUN=mean)
       
-      plot1 <- ggplot(aggDF, aes(x=station, y=pct_canceled_trains, fill=as.factor(station))) + 
-        geom_col() + 
-        guides(fill="none") + 
+      plot1 <- ggplot(aggDF_melted,
+                      aes(x=station, y=proportion, fill=train_state)) +
+        geom_col(position="fill") +
         theme_minimal() + 
-        theme(axis.text.x=element_text(size = 10, angle = -90, hjust = 0),
-              axis.title.x=element_blank(), axis.title.y=element_blank()) +
-        labs(title="Proportion of canceled trains per station", y="Proportion (%)")
+        theme(axis.text.x=element_text(angle=-90, hjust=0), axis.title.x=element_blank(), legend.position="top") +
+        guides(fill=guide_legend(title="Train state")) +
+        labs(y="Proportion of canceled trains per station (%)")
+        
+      
+      plot2 <- ggplot(delays_melted,
+                      aes(x=station, y=proportion, fill=delay_cause)) +
+        geom_col(position="fill") + 
+        theme_minimal() + 
+        theme(axis.text.x=element_text(angle=-90, hjust=0), axis.title.x=element_blank(), legend.position="top") +
+        guides(fill=guide_legend(title="Delay causes")) +
+        labs(y="Proportion of delay causes per station (%)")
       
       grid.arrange(plot1, plot2, nrow=2, ncol=1)
     }
