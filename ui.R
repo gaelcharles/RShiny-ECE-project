@@ -72,8 +72,12 @@ fluidPage(
     
     ###FLIGHTS###
     tabPanel("Flights",
-              leafletOutput("mymap", height = "90vh", width = "95vw")
-    )
+                leafletOutput("mymap", height = "90vh", width = "95vw"),
+                absolutePanel(top = "10vh", right = "5vw",
+                selectInput("Selected_Airline", "Airline", bd_airlines$AIRLINE)
+                )
+            )
+    
   )
 )
 

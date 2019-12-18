@@ -349,6 +349,8 @@ function(input, output) {
   
   ### FLIGHTS PART ###
   
+  Selcted_Airline <- reactive({input$Selected_Airline})
+  
   output$mymap <- renderLeaflet({
     leaflet() %>%
     addTiles() %>%  # Add default OpenStreetMap map tiles
@@ -358,13 +360,33 @@ function(input, output) {
                  weight = network[[1]]$edges$s.COUNT/10000+0.1)%>%
     addCircleMarkers(lng=bd_airports$LONGITUDE,
                      lat=bd_airports$LATITUDE,
-                     radius = aggregate(bd_flights$s.COUNT, by=list(Category=bd_flights$ORIGIN_AIRPORT), FUN=sum)$x/10000+3,
+                     radius = bd_airports$Flight_Count/10000+3,
                      color = "cornflowerblue",
                      stroke = FALSE, 
                      fillOpacity = 0.7,
-                     popup=paste(bd_airports$IATA_CODE, "<br>",
+                     popup=paste("<center>",
+                                 bd_airports$IATA_CODE, "<br>",
                                  bd_airports$AIRPORT, "<br>",
                                  bd_airports$CITY, "<br>",
-                                 bd_airports$STATE, bd_airports$COUNTRY))
+                                 bd_airports$STATE, bd_airports$COUNTRY, "<br>",
+                                 "<br>",
+                                 "Number of flights : ",  round(bd_airports$Flight_Count, digits=2), "<br>",
+                                 "Number of delayed flights : ", round(bd_airports$Delayed_Count, digits=2), "<br>",
+                                 "<br>",
+                                 "Average flight duration : ", round(bd_airports$Average_Flight_Time, digits=2), "min <br>",
+                                 "Average flight distance : ", round(bd_airports$Average_Distance, digits=2), "<br>",
+                                 "The total distance covered : ", round(bd_airports$Total_Distance, digits=2), "<br>",
+                                 "<br>",
+                                 "Average departure delay : ", round(bd_airports$Average_Departure_Delay, digits=2), "min <br>",
+                                 "Average Taxi out : ", round(bd_airports$Average_Taxi_Out, digits=2), "min <br>",
+                                 "<br>",
+                                 "Average air system delay : ", round(bd_airports$Average_Air_System_Delay, digits=2), "min <br>",
+                                 "Average security delay : ", round(bd_airports$Average_Security_Delay, digits=2), "min <br>",
+                                 "Average airline delay : ", round(bd_airports$Average_Airline_Delay, digits=2), "min <br>",
+                                 "Average late aircraft delay : ", round(bd_airports$Average_Late_Aircraft_Delay, digits=2), "min <br>",
+                                 "Average weather delay : ", round(bd_airports$Average_Weather_Delay, digits=2), "min <br>",
+                                 "<br>",
+                                 "Average arrival delay (as a depature airport): ", round(bd_airports$Average_Arrival_Delay, digits=2), "<br>",
+                                 "<center>"))
   })
 }
