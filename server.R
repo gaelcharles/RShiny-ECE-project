@@ -52,8 +52,8 @@ function(input, output) {
     if(input$aggregation_type == "tot" & input$aggregation_by == "year") {
       
       aggDF <- if(!input$all_stations)
-        read.csv("data/agg_byYearStation.csv") %>% filter(station == input$departure_station)
-        else read.csv("data/agg_byYear.csv")
+        read.csv("data/french-sncf-trains-regularities/agg_byYearStation.csv") %>% filter(station == input$departure_station)
+        else read.csv("data/french-sncf-trains-regularities/agg_byYear.csv")
       
       plot1 <- ggplot(aggDF, aes(x=year, y=num_carried_out, fill=as.factor(year))) + 
         geom_col() + 
@@ -97,7 +97,7 @@ function(input, output) {
     # Aggregation with sums, per station
     else if(input$aggregation_type == "tot" & input$aggregation_by == "station") {
       
-      aggDF <- read.csv("data/agg_byYearStation.csv") %>% filter(year == input$year)
+      aggDF <- read.csv("data/french-sncf-trains-regularities/agg_byYearStation.csv") %>% filter(year == input$year)
       
       plot1 <- ggplot(aggDF, aes(x=station, y=num_carried_out, fill=as.factor(station))) + 
         geom_col() + 
@@ -133,8 +133,8 @@ function(input, output) {
     else if(input$aggregation_type == "avg" & input$aggregation_by == "year") {
 
       aggDF <- if(!input$all_stations)
-        read.csv("data/agg_byYearStation.csv") %>% filter(station == input$departure_station)
-        else read.csv("data/agg_byYear.csv")
+        read.csv("data/french-sncf-trains-regularities/agg_byYearStation.csv") %>% filter(station == input$departure_station)
+        else read.csv("data/french-sncf-trains-regularities/agg_byYear.csv")
 
       plot1 <- ggplot(aggDF, aes(x=year, y=avg_late_at_departure, fill=as.factor(year))) +
         geom_col() +
@@ -196,7 +196,7 @@ function(input, output) {
     # Aggregations with mean, per station
     else if(input$aggregation_type == "avg" & input$aggregation_by == "station") {
       
-      aggDF <- read.csv("data/agg_byYearStation.csv") %>% filter(year == input$year)
+      aggDF <- read.csv("data/french-sncf-trains-regularities/agg_byYearStation.csv") %>% filter(year == input$year)
       
       plot1 <- ggplot(aggDF, aes(x=station, y=avg_late_at_departure, fill=as.factor(station))) +
         geom_col() + 
@@ -253,13 +253,13 @@ function(input, output) {
     else if(input$aggregation_type == "pct" & input$aggregation_by == "year") {
       
       aggDF_melted <- if(!input$all_stations)
-        read.csv("data/agg_melted_byYearStation.csv") %>% filter(station == input$departure_station)
-        else read.csv("data/agg_melted_byYear.csv")
+        read.csv("data/french-sncf-trains-regularities/agg_melted_byYearStation.csv") %>% filter(station == input$departure_station)
+        else read.csv("data/french-sncf-trains-regularities/agg_melted_byYear.csv")
       
       delays_melted <- if(!input$all_stations)
-        read.csv("data/delays_melted_byYearStation.csv", check.names=FALSE, encoding="Latin-1") %>%
+        read.csv("data/french-sncf-trains-regularities/delays_melted_byYearStation.csv", check.names=FALSE, encoding="Latin-1") %>%
         filter(station == input$departure_station)
-        else read.csv("data/delays_melted_byYear.csv", check.names=FALSE, encoding="Latin-1")
+        else read.csv("data/french-sncf-trains-regularities/delays_melted_byYear.csv", check.names=FALSE, encoding="Latin-1")
 
       # aggDF <- aggDF %>% mutate(pct_canceled_trains = 100*(num_of_canceled_trains/total_num_trips)) %>%
       #   mutate(pct_carried_out_trains = 100*(num_carried_out/total_num_trips))
@@ -285,10 +285,10 @@ function(input, output) {
     # Aggregations with percent, per station
     else if(input$aggregation_type == "pct" & input$aggregation_by == "station") {
 
-      aggDF_melted <- read.csv("data/agg_melted_byYearStation.csv", check.names=FALSE) %>%
+      aggDF_melted <- read.csv("data/french-sncf-trains-regularities/agg_melted_byYearStation.csv", check.names=FALSE) %>%
         filter(year == input$year)
       
-      delays_melted <- read.csv("data/delays_melted_byYearStation.csv", check.names=FALSE, encoding="Latin-1")
+      delays_melted <- read.csv("data/french-sncf-trains-regularities/delays_melted_byYearStation.csv", check.names=FALSE, encoding="Latin-1")
       
       # aggregate(delays_melted %>% select(proportion), 
       #           by=list(station=delays_melted$station, delay_cause=delays_melted$delay_cause), 
