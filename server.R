@@ -345,4 +345,26 @@ function(input, output) {
     }
 
   })
+  
+  
+  ### FLIGHTS PART ###
+  
+  output$mymap <- renderLeaflet({
+    leaflet() %>%
+    addTiles() %>%  # Add default OpenStreetMap map tiles
+    addPolylines(data = airlines_edges[[1]],
+                 color = "red",
+                 fillOpacity = 0.3,
+                 weight = network[[1]]$edges$s.COUNT/10000+0.1)%>%
+    addCircleMarkers(lng=bd_airports$LONGITUDE,
+                     lat=bd_airports$LATITUDE,
+                     radius = aggregate(bd_flights$s.COUNT, by=list(Category=bd_flights$ORIGIN_AIRPORT), FUN=sum)$x/10000+3,
+                     color = "cornflowerblue",
+                     stroke = FALSE, 
+                     fillOpacity = 0.7,
+                     popup=paste(bd_airports$IATA_CODE, "<br>",
+                                 bd_airports$AIRPORT, "<br>",
+                                 bd_airports$CITY, "<br>",
+                                 bd_airports$STATE, bd_airports$COUNTRY))
+  })
 }

@@ -70,13 +70,9 @@ fluidPage(
       )
     ),
     
+    ###FLIGHTS###
     tabPanel("Flights",
-     sidebarPanel(
-       h3("Flights control panel"),
-       hr()
-     ),
-     
-     mainPanel(h3("Future plots"))
+              leafletOutput("mymap", height = "90vh", width = "95vw")
     )
   )
 )
