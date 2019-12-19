@@ -349,7 +349,8 @@ function(input, output) {
   
   ### FLIGHTS PART ###
   
-  Selcted_Airline <- reactive({match(input$Selected_Airline, bd_airlines$AIRLINE)})
+  Selected_Airline <- reactive({match(input$Selected_Airline, bd_airlines$AIRLINE)})
+  Airlines_Or_Airports_React <- reactive({input$Airlines_Or_Airports})
   
   output$mymap <- renderLeaflet({
     leaflet() %>% addTiles() %>%  # Add default OpenStreetMap map tiles
@@ -413,16 +414,28 @@ function(input, output) {
         )
       } else {
         switch (input$Type_of_agg,
-                "Number of Flights" = barplot(bd_airports$Flight_Count, names.arg = bd_airports$IATA_CODE, las=2),
-                "Number of delayed flights" = barplot(bd_airports$Delayed_Count, names.arg = bd_airports$IATA_CODE, las=2),
-                "Average flight duration" = barplot(bd_airports$Average_Flight_Time, names.arg = bd_airports$IATA_CODE, las=2),
-                "Average flight distance" = barplot(bd_airports$Average_Distance, names.arg = bd_airports$IATA_CODE, las=2),
-                "The total distance covered" = barplot(bd_airports$Total_Distance, names.arg = bd_airports$IATA_CODE, las=2),
-                "Average departure delay" = barplot(bd_airports$Average_Departure_Delay, names.arg = bd_airports$IATA_CODE, las=2),
-                "Average arrival delay" = barplot(bd_airports$Average_Arrival_Delay, names.arg = bd_airports$IATA_CODE, las=2)
+                "Number of Flights" = barplot(bd_airports[order(bd_airports$Flight_Count, decreasing=input$Decreasing),]$Flight_Count[1:input$Nb_Airlines_Plot],
+                                              names.arg = bd_airports[order(bd_airports$Flight_Count, decreasing=input$Decreasing),]$IATA_CODE[1:input$Nb_Airlines_Plot], las=2),
+                "Number of delayed flights" = barplot(bd_airports[order(bd_airports$Delayed_Count, decreasing=input$Decreasing),]$Delayed_Count[1:input$Nb_Airlines_Plot],
+                                                      names.arg = bd_airports[order(bd_airports$Delayed_Count, decreasing=input$Decreasing),]$IATA_CODE[1:input$Nb_Airlines_Plot], las=2),
+                "Average flight duration" = barplot(bd_airports[order(bd_airports$Average_Flight_Time, decreasing=input$Decreasing),]$Average_Flight_Time[1:input$Nb_Airlines_Plot],
+                                                    names.arg = bd_airports[order(bd_airports$Average_Flight_Time, decreasing=input$Decreasing),]$IATA_CODE[1:input$Nb_Airlines_Plot], las=2),
+                "Average flight distance" = barplot(bd_airports[order(bd_airports$Average_Distance, decreasing=input$Decreasing),]$Average_Distance[1:input$Nb_Airlines_Plot],
+                                                    names.arg = bd_airports[order(bd_airports$Average_Distance, decreasing=input$Decreasing),]$IATA_CODE[1:input$Nb_Airlines_Plot], las=2),
+                "The total distance covered" = barplot(bd_airports[order(bd_airports$Total_Distance, decreasing=input$Decreasing),]$Total_Distance[1:input$Nb_Airlines_Plot],
+                                                       names.arg = bd_airports[order(bd_airports$Total_Distance, decreasing=input$Decreasing),]$IATA_CODE[1:input$Nb_Airlines_Plot], las=2),
+                "Average departure delay" = barplot(bd_airports[order(bd_airports$Average_Departure_Delay, decreasing=input$Decreasing),]$Average_Departure_Delay[1:input$Nb_Airlines_Plot],
+                                                    names.arg = bd_airports[order(bd_airports$Average_Departure_Delay, decreasing=input$Decreasing),]$IATA_CODE[1:input$Nb_Airlines_Plot], las=2),
+                "Average arrival delay" = barplot(bd_airports[order(bd_airports$Average_Arrival_Delay, decreasing=input$Decreasing),]$Average_Arrival_Delay[1:input$Nb_Airlines_Plot],
+                                                  names.arg = bd_airports[order(bd_airports$Average_Arrival_Delay, decreasing=input$Decreasing),]$IATA_CODE[1:input$Nb_Airlines_Plot], las=2)
         )
       }
       
       })
+  })
+  
+  observeEvent(Airlines_Or_Airports_React(), {
+    # Deactivate departure_station if checkbox "all stations" is checked
+    shinyjs::toggleState("Nb_Airlines_Plot", condition = (!Airlines_Or_Airports_React() == "Airlines"))
   })
 }
