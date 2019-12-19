@@ -44,7 +44,7 @@ fluidPage(
         radioButtons("aggregation_type",
          label = NULL,
          choices=c("Total aggregations" = "tot",
-                   "Average/median aggregations" = "avg",
+                   "Average aggregations" = "avg",
                    "Proportion aggregations (%)" = "pct")),
         
         hr(),

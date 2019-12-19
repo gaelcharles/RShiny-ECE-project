@@ -1,0 +1,79 @@
+R Shiny trains and flights dashboard
+========================================================
+author: Gaël CHARLES, Corentin COSTE, Ismail ZMERLI
+date: 19/12/2019
+autosize: true
+
+Aggregated dataframes
+========================================================
+
+We created aggregated dataframes with the data we need
+```{r, echo=FALSE}
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+aggDF <- read.csv("data/french-sncf-trains-regularities/agg_byYearStation.csv")
+aggDF %>% select(year, station, num_carried_out) %>% head(n=5)
+```
+
+Types of aggregations
+========================================================
+We grouped every aggregation in one of the following:
+- **Total aggregations** (total number of something)
+- **Average aggregations** (average number of something)
+- **Proportion aggregations** (% of something)
+  
+Each aggregation can be shown per station, per year for a specific station, or per year for every stations.
+
+Total aggregations
+========================================================
+
+Example: aggregations per year of carried out trains, for "Aix en Provence"
+```{r, echo=FALSE}
+theme_set(theme_minimal() + theme(axis.title.y=element_blank()))
+```
+```{r trains_totalPlot}
+ggplot(aggDF %>% filter(station == "AIX EN PROVENCE TGV"),
+       aes(x=year, y=num_carried_out, fill=as.factor(year))) + 
+  geom_col() + scale_fill_brewer(palette="Blues") + 
+  geom_label(aes(label=num_carried_out)) + guides(fill="none")
+
+```
+
+
+Average aggregations
+========================================================
+
+By following the same structure we can plot aggregations by average.  
+Example: aggregation per year of average delay (min) of late trains, for "Aix en Provence"
+
+```{r trains_averagePlot, echo=FALSE}
+ggplot(aggDF %>% filter(station == "AIX EN PROVENCE TGV"), aes(x=year, y=avg_delay_late_on_arrival, fill=as.factor(year))) +
+        geom_col() +
+        scale_fill_brewer(palette="Pastel2") +
+        geom_label(aes(label=round(avg_delay_late_on_arrival, 1)), vjust=0) + 
+        labs(title="Average delay on arrival of late trains per year (min)") + 
+        guides(fill="none") + 
+        theme_minimal() +
+        theme(axis.title.y=element_blank())
+```
+
+Proportion aggregations
+========================================================
+
+By following the same structure we can plot aggregations by propotions  
+Example of proportion of delays causes per year, for "Aix en Provence"
+```{r trains_proportionPlot, echo=FALSE}
+delays_melted <- read.csv("data/french-sncf-trains-regularities/delays_melted_byYearStation.csv", check.names=FALSE, encoding="UTF-8") %>% 
+  filter(station == "AIX EN PROVENCE TGV")
+ggplot(delays_melted,
+                      aes(x=year, y=proportion, fill=delay_cause)) +
+        geom_col(position="fill") + 
+        theme_minimal() + 
+        theme(axis.text.x=element_text(angle=45, vjust=2.6, hjust=1.5), axis.title.x=element_blank()) + 
+        guides(fill=guide_legend(title="Delay causes")) + 
+        labs(y="Proportion of delay causes per year (%)")
+```
+
