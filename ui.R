@@ -84,7 +84,9 @@ fluidPage(
               
               selectInput("Selected_Airline", "Airline on the Map", bd_airlines$AIRLINE, selected = bd_airlines$AIRLINE[1]),
               selectInput("Type_of_agg", "Compare", c("Number of Flights", 
-                                                      "Number of delayed flights", 
+                                                      "Number of delayed flights",
+                                                      "Number of diverted flights",
+                                                      "Number of canceled flights",
                                                       "Average flight duration",
                                                       "Average flight distance", 
                                                       "The total distance covered", 

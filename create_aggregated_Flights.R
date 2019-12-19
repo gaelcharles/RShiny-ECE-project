@@ -153,7 +153,11 @@ dt_flights_incomplete_agg <- dt_flights_incomplete[,
                                                         s.CANCELLED=sum(CANCELLED)),
                                                    by=c("AIRLINE", "ORIGIN_AIRPORT", "DESTINATION_AIRPORT")]
 
+final_flights_agg <- merge(dt_flights_complete_agg,select(dt_flights_incomplete_agg, "AIRLINE", "ORIGIN_AIRPORT", "DESTINATION_AIRPORT", "s.DIVERTED", "s.CANCELLED"), by=c("AIRLINE", "ORIGIN_AIRPORT", "DESTINATION_AIRPORT"), all.x=TRUE)
+final_flights_agg$s.DIVERTED[is.na(final_flights_agg$s.DIVERTED)] <- 0
+final_flights_agg$s.CANCELLED[is.na(final_flights_agg$s.CANCELLED)] <- 0
+
 print("Exporting...")
 
-write.csv(dt_flights_complete_agg, file = "data/usa-flight-delays/flights_complete_agg.csv")
-write.csv(dt_flights_incomplete_agg, file = "data/usa-flight-delays/flights_incomplete_agg.csv")
+write.csv(final_flights_agg, file = "data/usa-flight-delays/flights_complete_agg.csv")
+

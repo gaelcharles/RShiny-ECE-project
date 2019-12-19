@@ -78,6 +78,8 @@ for (airline in 1:nrow(bd_airlines)) {
 print("Aggregations...")
 bd_airports$Flight_Count <- aggregate(bd_flights$s.COUNT, by=list(Category=bd_flights$ORIGIN_AIRPORT), FUN=sum)$x
 bd_airports$Delayed_Count <- aggregate(bd_flights$s.DELAYED, by=list(Category=bd_flights$ORIGIN_AIRPORT), FUN=sum)$x
+bd_airports$Diverted_Count <- aggregate(bd_flights$s.DIVERTED, by=list(Category=bd_flights$ORIGIN_AIRPORT), FUN=sum)$x
+bd_airports$Canceled_Count <- aggregate(bd_flights$s.CANCELLED, by=list(Category=bd_flights$ORIGIN_AIRPORT), FUN=sum)$x
 bd_airports$Total_Distance <- aggregate(bd_flights$s.DISTANCE, by=list(Category=bd_flights$ORIGIN_AIRPORT), FUN=sum)$x
 bd_airports$Average_Distance <- bd_airports$Total_Distance / bd_airports$Flight_Count
 bd_airports$Average_Flight_Time <- aggregate(bd_flights$s.ELAPSED_TIME, by=list(Category=bd_flights$ORIGIN_AIRPORT), FUN=sum)$x / bd_airports$Flight_Count
@@ -93,6 +95,8 @@ bd_airports$Average_Arrival_Delay <- aggregate(bd_flights$s.ARRIVAL_DELAY, by=li
 
 bd_airlines$Flight_Count <- aggregate(bd_flights$s.COUNT, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x
 bd_airlines$Delayed_Count <- aggregate(bd_flights$s.DELAYED, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x
+bd_airlines$Diverted_Count <- aggregate(bd_flights$s.DIVERTED, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x
+bd_airlines$Canceled_Count <- aggregate(bd_flights$s.CANCELLED, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x
 bd_airlines$Total_Distance <- aggregate(bd_flights$s.DISTANCE, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x
 bd_airlines$Average_Distance <- bd_airlines$Total_Distance / bd_airlines$Flight_Count
 bd_airlines$Average_Flight_Time <- aggregate(bd_flights$s.ELAPSED_TIME, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x / bd_airlines$Flight_Count
