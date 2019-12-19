@@ -41,19 +41,15 @@ function(input, output) {
   
   output$trains_plot <- renderPlot({
     
-    plot1 <- ggplot(TRAINS, aes())
-    plot2 <- ggplot(TRAINS, aes())
-    plot3 <- ggplot(TRAINS, aes())
-    plot4 <- ggplot(TRAINS, aes())
-    plot5 <- ggplot(TRAINS, aes())
-    plot6 <- ggplot(TRAINS, aes())
-    
     # Aggregation with sums, per year
     if(input$aggregation_type == "tot" & input$aggregation_by == "year") {
       
+      updateSliderInput(session, inputId = "dynamic_height", value = 800)
+      updateSliderInput(session, inputId = "dynamic_width", value = 800)
+      
       aggDF <- if(!input$all_stations)
         read.csv("data/french-sncf-trains-regularities/agg_byYearStation.csv") %>% filter(station == input$departure_station)
-        else read.csv("data/french-sncf-trains-regularities/agg_byYear.csv")
+      else read.csv("data/french-sncf-trains-regularities/agg_byYear.csv")
       
       plot1 <- ggplot(aggDF, aes(x=year, y=num_carried_out, fill=as.factor(year))) + 
         geom_col() + 
@@ -92,10 +88,13 @@ function(input, output) {
         theme(axis.title.y=element_blank())
       
       grid.arrange(plot1, plot2, plot3, plot4, nrow=2, ncol=2)
-    
+      
     }
     # Aggregation with sums, per station
     else if(input$aggregation_type == "tot" & input$aggregation_by == "station") {
+      
+      updateSliderInput(session, inputId = "dynamic_height", value = 2000)
+      updateSliderInput(session, inputId = "dynamic_width", value = 1000)
       
       aggDF <- read.csv("data/french-sncf-trains-regularities/agg_byYearStation.csv") %>% filter(year == input$year)
       
@@ -131,11 +130,15 @@ function(input, output) {
     } 
     # Aggregation with means, per year
     else if(input$aggregation_type == "avg" & input$aggregation_by == "year") {
-
+      
+      updateSliderInput(session, inputId = "dynamic_height", value = 800)
+      updateSliderInput(session, inputId = "dynamic_width", value = 820)
+      
+      
       aggDF <- if(!input$all_stations)
         read.csv("data/french-sncf-trains-regularities/agg_byYearStation.csv") %>% filter(station == input$departure_station)
-        else read.csv("data/french-sncf-trains-regularities/agg_byYear.csv")
-
+      else read.csv("data/french-sncf-trains-regularities/agg_byYear.csv")
+      
       plot1 <- ggplot(aggDF, aes(x=year, y=avg_late_at_departure, fill=as.factor(year))) +
         geom_col() +
         scale_fill_brewer(palette="Blues") +
@@ -196,6 +199,10 @@ function(input, output) {
     # Aggregations with mean, per station
     else if(input$aggregation_type == "avg" & input$aggregation_by == "station") {
       
+      updateSliderInput(session, inputId = "dynamic_height", value = 2000)
+      updateSliderInput(session, inputId = "dynamic_width", value = 800)
+      
+      
       aggDF <- read.csv("data/french-sncf-trains-regularities/agg_byYearStation.csv") %>% filter(year == input$year)
       
       plot1 <- ggplot(aggDF, aes(x=station, y=avg_late_at_departure, fill=as.factor(station))) +
@@ -252,15 +259,18 @@ function(input, output) {
     # Aggregations with percent, per year
     else if(input$aggregation_type == "pct" & input$aggregation_by == "year") {
       
+      updateSliderInput(session, inputId = "dynamic_height", value = 800)
+      updateSliderInput(session, inputId = "dynamic_width", value = 800)
+      
       aggDF_melted <- if(!input$all_stations)
         read.csv("data/french-sncf-trains-regularities/agg_melted_byYearStation.csv") %>% filter(station == input$departure_station)
-        else read.csv("data/french-sncf-trains-regularities/agg_melted_byYear.csv")
+      else read.csv("data/french-sncf-trains-regularities/agg_melted_byYear.csv")
       
       delays_melted <- if(!input$all_stations)
         read.csv("data/french-sncf-trains-regularities/delays_melted_byYearStation.csv", check.names=FALSE, encoding="UTF-8") %>%
         filter(station == input$departure_station)
-        else read.csv("data/french-sncf-trains-regularities/delays_melted_byYear.csv", check.names=FALSE, encoding="UTF-8")
-
+      else read.csv("data/french-sncf-trains-regularities/delays_melted_byYear.csv", check.names=FALSE, encoding="UTF-8")
+      
       # aggDF <- aggDF %>% mutate(pct_canceled_trains = 100*(num_of_canceled_trains/total_num_trips)) %>%
       #   mutate(pct_carried_out_trains = 100*(num_carried_out/total_num_trips))
       
@@ -284,7 +294,10 @@ function(input, output) {
     }
     # Aggregations with percent, per station
     else if(input$aggregation_type == "pct" & input$aggregation_by == "station") {
-
+      
+      updateSliderInput(session, inputId = "dynamic_height", value = 1100)
+      updateSliderInput(session, inputId = "dynamic_width", value = 800)
+      
       aggDF_melted <- read.csv("data/french-sncf-trains-regularities/agg_melted_byYearStation.csv", check.names=FALSE) %>%
         filter(year == input$year)
       
@@ -301,7 +314,7 @@ function(input, output) {
         theme(axis.text.x=element_text(angle=-90, hjust=0), axis.title.x=element_blank(), legend.position="top") +
         guides(fill=guide_legend(title="Train state")) +
         labs(y="Proportion of canceled trains per station (%)")
-        
+      
       
       plot2 <- ggplot(delays_melted,
                       aes(x=station, y=proportion, fill=delay_cause)) +
@@ -313,7 +326,7 @@ function(input, output) {
       
       grid.arrange(plot1, plot2, nrow=2, ncol=1)
     }
-
+    
     
   })
   
