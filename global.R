@@ -91,6 +91,21 @@ bd_airports$Average_Weather_Delay <- aggregate(bd_flights$s.WEATHER_DELAY, by=li
 bd_airports$Average_Weather_Delay <- aggregate(bd_flights$s.WEATHER_DELAY, by=list(Category=bd_flights$ORIGIN_AIRPORT), FUN=sum)$x / bd_airports$Flight_Count
 bd_airports$Average_Arrival_Delay <- aggregate(bd_flights$s.ARRIVAL_DELAY, by=list(Category=bd_flights$ORIGIN_AIRPORT), FUN=sum)$x / bd_airports$Flight_Count
 
+bd_airlines$Flight_Count <- aggregate(bd_flights$s.COUNT, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x
+bd_airlines$Delayed_Count <- aggregate(bd_flights$s.DELAYED, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x
+bd_airlines$Total_Distance <- aggregate(bd_flights$s.DISTANCE, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x
+bd_airlines$Average_Distance <- bd_airlines$Total_Distance / bd_airlines$Flight_Count
+bd_airlines$Average_Flight_Time <- aggregate(bd_flights$s.ELAPSED_TIME, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x / bd_airlines$Flight_Count
+bd_airlines$Average_Departure_Delay <- aggregate(bd_flights$s.DEPARTURE_DELAY, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x / bd_airlines$Flight_Count
+bd_airlines$Average_Taxi_Out <- aggregate(bd_flights$s.TAXI_OUT, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x / bd_airlines$Flight_Count
+bd_airlines$Average_Air_System_Delay <- aggregate(bd_flights$s.AIR_SYSTEM_DELAY, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x / bd_airlines$Flight_Count
+bd_airlines$Average_Security_Delay <- aggregate(bd_flights$s.SECURITY_DELAY, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x / bd_airlines$Flight_Count
+bd_airlines$Average_Airline_Delay <- aggregate(bd_flights$s.AIRLINE_DELAY, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x / bd_airlines$Flight_Count
+bd_airlines$Average_Late_Aircraft_Delay <- aggregate(bd_flights$s.LATE_AIRCRAFT_DELAY, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x / bd_airlines$Flight_Count
+bd_airlines$Average_Weather_Delay <- aggregate(bd_flights$s.WEATHER_DELAY, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x / bd_airlines$Flight_Count
+bd_airlines$Average_Weather_Delay <- aggregate(bd_flights$s.WEATHER_DELAY, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x / bd_airlines$Flight_Count
+bd_airlines$Average_Arrival_Delay <- aggregate(bd_flights$s.ARRIVAL_DELAY, by=list(Category=bd_flights$AIRLINE), FUN=sum)$x / bd_airlines$Flight_Count
+
 print("Done !")
 
 

@@ -349,15 +349,11 @@ function(input, output) {
   
   ### FLIGHTS PART ###
   
-  Selcted_Airline <- reactive({input$Selected_Airline})
+  Selcted_Airline <- reactive({match(input$Selected_Airline, bd_airlines$AIRLINE)})
   
   output$mymap <- renderLeaflet({
-    leaflet() %>%
-    addTiles() %>%  # Add default OpenStreetMap map tiles
-    addPolylines(data = airlines_edges[[1]],
-                 color = "red",
-                 fillOpacity = 0.3,
-                 weight = network[[1]]$edges$s.COUNT/10000+0.1)%>%
+    leaflet() %>% addTiles() %>%  # Add default OpenStreetMap map tiles
+    addProviderTiles(providers$CartoDB.Positron)  %>% 
     addCircleMarkers(lng=bd_airports$LONGITUDE,
                      lat=bd_airports$LATITUDE,
                      radius = bd_airports$Flight_Count/10000+3,
@@ -386,7 +382,47 @@ function(input, output) {
                                  "Average late aircraft delay : ", round(bd_airports$Average_Late_Aircraft_Delay, digits=2), "min <br>",
                                  "Average weather delay : ", round(bd_airports$Average_Weather_Delay, digits=2), "min <br>",
                                  "<br>",
-                                 "Average arrival delay (as a depature airport): ", round(bd_airports$Average_Arrival_Delay, digits=2), "<br>",
+                                 "Average arrival delay (as a depature airport): ", round(bd_airports$Average_Arrival_Delay, digits=2), "min <br>",
                                  "<center>"))
+  })
+  
+  observe({
+    print(input$Selected_Airline)
+    proxy <- leafletProxy("mymap")
+    id_airline <- match(input$Selected_Airline, bd_airlines$AIRLINE)
+    
+    proxy %>%
+    clearShapes() %>%
+    addPolylines(data = airlines_edges[[id_airline]],
+                 color = "red",
+                 fillOpacity = 0.3,
+                 weight = network[[id_airline]]$edges$s.COUNT/10000+0.3)
+    
+    print(input$Airlines_Or_Airports)
+    print(input$Type_of_agg)
+    output$plot_flights <- renderPlot({
+      if(input$Airlines_Or_Airports == "Airlines") {
+        switch (input$Type_of_agg,
+                "Number of Flights" = barplot(bd_airlines$Flight_Count, names.arg = bd_airlines$IATA_CODE, las=2),
+                "Number of delayed flights" = barplot(bd_airlines$Delayed_Count, names.arg = bd_airlines$IATA_CODE, las=2),
+                "Average flight duration" = barplot(bd_airlines$Average_Flight_Time, names.arg = bd_airlines$IATA_CODE, las=2),
+                "Average flight distance" = barplot(bd_airlines$Average_Distance, names.arg = bd_airlines$IATA_CODE, las=2),
+                "The total distance covered" = barplot(bd_airlines$Total_Distance, names.arg = bd_airlines$IATA_CODE, las=2),
+                "Average departure delay" = barplot(bd_airlines$Average_Departure_Delay, names.arg = bd_airlines$IATA_CODE, las=2),
+                "Average arrival delay" = barplot(bd_airlines$Average_Arrival_Delay, names.arg = bd_airlines$IATA_CODE, las=2)
+        )
+      } else {
+        switch (input$Type_of_agg,
+                "Number of Flights" = barplot(bd_airports$Flight_Count, names.arg = bd_airports$IATA_CODE, las=2),
+                "Number of delayed flights" = barplot(bd_airports$Delayed_Count, names.arg = bd_airports$IATA_CODE, las=2),
+                "Average flight duration" = barplot(bd_airports$Average_Flight_Time, names.arg = bd_airports$IATA_CODE, las=2),
+                "Average flight distance" = barplot(bd_airports$Average_Distance, names.arg = bd_airports$IATA_CODE, las=2),
+                "The total distance covered" = barplot(bd_airports$Total_Distance, names.arg = bd_airports$IATA_CODE, las=2),
+                "Average departure delay" = barplot(bd_airports$Average_Departure_Delay, names.arg = bd_airports$IATA_CODE, las=2),
+                "Average arrival delay" = barplot(bd_airports$Average_Arrival_Delay, names.arg = bd_airports$IATA_CODE, las=2)
+        )
+      }
+      
+      })
   })
 }

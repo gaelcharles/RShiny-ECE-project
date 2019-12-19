@@ -72,12 +72,32 @@ fluidPage(
     
     ###FLIGHTS###
     tabPanel("Flights",
-                leafletOutput("mymap", height = "90vh", width = "95vw"),
-                absolutePanel(top = "10vh", right = "5vw",
-                selectInput("Selected_Airline", "Airline", bd_airlines$AIRLINE)
-                )
+            leafletOutput("mymap",height = "90vh", width = "95vw"),
+            
+            absolutePanel(
+              top = "10vh",
+              right = "5vw",
+              height = "85vh",
+              width = "38vw",
+              draggable = TRUE,
+              style = "background-color: rgba(100,100,100,0.3); padding:20px;",
+              
+              selectInput("Selected_Airline", "Airline on the Map", bd_airlines$AIRLINE, selected = bd_airlines$AIRLINE[1]),
+              selectInput("Type_of_agg", "Compare", c("Number of Flights", 
+                                                      "Number of delayed flights", 
+                                                      "Average flight duration",
+                                                      "Average flight distance", 
+                                                      "The total distance covered", 
+                                                      "The total distance covered",
+                                                      "Average departure delay",
+                                                      "Average arrival delay")),
+              selectInput("Airlines_Or_Airports", "Bettween", c("Airlines", "Airports")),
+              plotOutput("plot_flights", width = "35vw", height = "50vh")
+            )
+             
             )
     
   )
 )
+
 
