@@ -77,14 +77,16 @@ fluidPage(
             absolutePanel(
               top = "10vh",
               right = "5vw",
-              height = "85vh",
+              height = "87vh",
               width = "38vw",
               draggable = TRUE,
               style = "background-color: rgba(100,100,100,0.3); padding:20px;",
               
               selectInput("Selected_Airline", "Airline on the Map", bd_airlines$AIRLINE, selected = bd_airlines$AIRLINE[1]),
               selectInput("Type_of_agg", "Compare", c("Number of Flights", 
-                                                      "Number of delayed flights", 
+                                                      "Number of delayed flights",
+                                                      "Number of diverted flights",
+                                                      "Number of canceled flights",
                                                       "Average flight duration",
                                                       "Average flight distance", 
                                                       "The total distance covered", 
@@ -92,7 +94,16 @@ fluidPage(
                                                       "Average departure delay",
                                                       "Average arrival delay")),
               selectInput("Airlines_Or_Airports", "Bettween", c("Airlines", "Airports")),
-              plotOutput("plot_flights", width = "35vw", height = "50vh")
+              sliderInput("Nb_Airlines_Plot",
+                          label = "Number of Airports",
+                          min = 1,
+                          max = nrow(bd_airports),
+                          step = 1,
+                          value = 10),
+              plotOutput("plot_flights", width = "35vw", height = "35vh"),
+              checkboxInput("Decreasing",
+                            label = "Decreasing",
+                            value = TRUE),
             )
              
             )
