@@ -60,4 +60,9 @@ These contain aggregations that plot the average number of something. We find he
 **Proportion aggregations**:  
 These contain aggregations that plot some proportions (%). We find here the proportion of canceled trains, and the proportion of delay causes.
 
+In the flights dashboard, one can select an airline company in order to plot on the USA map the different flights insured by this airline. A flight is a line between the airports of departure and arrival.  
+One can also choose what type of comparison to plot in the "compare" selecter.  
+For each comparison plot, we can plot choose to compare between airlines (all included) or airports (an additionnal slider filters how many airports we want to involve in the comparison).
+
+
 Every aggregation just mentioned can be shown aggregated per year regarding a specific station (or all stations), or per station.
