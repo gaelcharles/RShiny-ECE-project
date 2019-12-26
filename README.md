@@ -1,4 +1,4 @@
-#[Read me] application documentation
+# Read me: application documentation
 
 ### Team:
 - Gaël CHARLES
