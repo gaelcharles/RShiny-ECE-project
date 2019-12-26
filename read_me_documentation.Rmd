@@ -9,8 +9,21 @@ output: html_notebook
 - Ismail ZMERLI
 
 This notebook is the documentation of the shiny app our team provided.  
-This app is a dashboard that shows various information on trains and flights datasets. The files are quite large and yet can't be loaded into shiny directly.  
+This app is a dashboard that shows various information on trains and flights datasets.
+
+### For the trains part
+We used two datasets.  
+**full_trains.csv**: Every line gives information on every trips between two French stations that happened for a given month and year.  
+**regularite-mensuelle-tgv-aqst.csv**: Same CSV but with French column names and with delay information on those trips  
   
+### For the flights part
+We used three datasets.  
+**airlines.csv**: Character code for a given airline  
+**flights.csv**: Lots of information on many flights in North America  
+**airports.csv**: Information on airports involved in those flights.  
+
+The files are quite large and yet can't be loaded into shiny directly.  
+
 Consequently, we wrote a script that creates lighter aggregated dataframes. These are the dataframes we load into shiny.  
   
 One can run this script if the corresponding datasets are found inside their respective folders in a "data" folder, at the root of the project, like so:
@@ -25,8 +38,11 @@ One can run this script if the corresponding datasets are found inside their res
         - airlines.csv
         - airports.csv
         - flights.csv
+        
+## [!] IMPORTANT NOTE [!]
+File 'data/usa-flight-delays/airports.csv' has been modified to complete unfound airport locations, you need to use this one. It can be found in the GitHub.
 
-```{r}
+```{r, echo=TRUE}
 # Run this cell to execute the script
 source('create_aggregated_CSVs.R')
 ```

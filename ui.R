@@ -103,7 +103,7 @@ fluidPage(
               plotOutput("plot_flights", width = "35vw", height = "35vh"),
               checkboxInput("Decreasing",
                             label = "Decreasing",
-                            value = TRUE),
+                            value = TRUE)
             )
              
             )
