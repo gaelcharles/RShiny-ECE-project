@@ -6,5 +6,4 @@
 data/french-sncf-trains-regularities/full_trains.csv
 data/french-sncf-trains-regularities/regularite-mensuelle-tgv-aqst.csv
 data/usa-flights-delays/airlines.csv
-data/usa-flights-delays/airports.csv
 data/usa-flights-delays/flights.csv

@@ -1,4 +1,4 @@
-function(input, output) {
+function(session, input, output) {
 
   # REACTIVE ELEMENTS #
   react_allStations <- reactive({
