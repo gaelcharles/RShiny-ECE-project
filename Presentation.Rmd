@@ -106,4 +106,4 @@ barplot(bd_airports[order(bd_airports$Delayed_Count, decreasing=TRUE),]$Delayed_
 ## Useful links
 - [GitHub Repository](https://github.com/gaelcharles/RShiny-ECE-project)  
 - [Shiny app](https://charles-zmerli-coste.shinyapps.io/r_project/)  
-- [R Presentation](http://rpubs.com/gaelcharles/RShiny-Project)  
+- [R Presentation](http://rpubs.com/gaelcharles/RShiny-Presentation)  
