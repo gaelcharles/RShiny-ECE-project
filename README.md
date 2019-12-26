@@ -1,7 +1,4 @@
----
-title: "[Read me] application documentation"
-output: html_notebook
----
+#[Read me] application documentation
 
 ### Team:
 - Gaël CHARLES
